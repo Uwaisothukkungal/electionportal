@@ -1,0 +1,92 @@
+'use client';
+
+import { useState } from 'react';
+
+type Party = { id: number; name: string; abbrev: string };
+
+type Props = {
+  serialNumber: number;
+  parties: Party[];
+  initialPartyId?: number;
+  title?: string;
+  saveLabel?: string;
+  onSave: (partyId: number) => void;
+  onCancel: () => void;
+  isSaving?: boolean;
+};
+
+export function VoterMarkModal({
+  serialNumber,
+  parties,
+  initialPartyId,
+  title = `Map Voter #${serialNumber}`,
+  saveLabel = 'Save Mapping',
+  onSave,
+  onCancel,
+  isSaving = false,
+}: Props) {
+  const [selectedParty, setSelectedParty] = useState<number | null>(initialPartyId || null);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-xl animate-in fade-in duration-300">
+      <div className="w-full max-w-sm bg-white border border-gray-100 rounded-[2.5rem] p-10 shadow-2xl animate-in zoom-in duration-300">
+        <h3 className="text-2xl font-black text-gray-900 mb-2 leading-tight tracking-tight uppercase">{title}</h3>
+        <p className="text-sm font-bold text-gray-400 mb-8 leading-relaxed">
+          Assign a political affiliation to this voter. Selected party will be used for polling records.
+        </p>
+
+        <div className="space-y-8">
+          <div>
+            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Political Affiliation</label>
+            <div className="grid grid-cols-2 gap-3 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+              {parties.map((p) => {
+                const isSelected = selectedParty === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setSelectedParty(p.id)}
+                    className={`
+                      relative flex flex-col items-center justify-center p-5 rounded-2xl border-2 transition-all duration-300
+                      ${isSelected 
+                        ? 'bg-emerald-600 border-emerald-600 text-white shadow-xl shadow-emerald-500/20 active:scale-95' 
+                        : 'bg-gray-50 border-gray-100 text-gray-500 hover:border-gray-300 hover:bg-gray-100'
+                      }
+                    `}
+                  >
+                    <span className={`text-sm font-black tracking-widest uppercase ${isSelected ? 'text-white' : 'text-gray-900'}`}>
+                      {p.abbrev}
+                    </span>
+                    <span className={`text-[0.6rem] font-bold truncate w-full text-center mt-1 uppercase ${isSelected ? 'text-emerald-100/70' : 'text-gray-400'}`}>
+                      {p.name}
+                    </span>
+                    {isSelected && (
+                      <span className="absolute top-2 right-2 text-[10px] text-white/50 animate-pulse">✓</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => selectedParty && onSave(selectedParty)}
+              disabled={isSaving || !selectedParty}
+              className="w-full py-4 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-500 shadow-xl shadow-emerald-600/20 transition-all font-black uppercase text-sm disabled:opacity-30 disabled:shadow-none active:scale-95"
+            >
+              {isSaving ? 'Saving…' : saveLabel}
+            </button>
+            <button
+              onClick={onCancel}
+              disabled={isSaving}
+              className="w-full py-4 rounded-2xl bg-gray-50 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all font-black uppercase text-xs active:scale-95"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
