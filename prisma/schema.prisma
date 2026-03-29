@@ -20,6 +20,8 @@ model Party {
   abbrev    String      @unique
   users     User[]
   marks     VoterMark[] 
+  
+  @@map("party")
 }
 
 model Constituency {
@@ -27,6 +29,8 @@ model Constituency {
   name       String      @unique
   panchayats Panchayat[]
   users      User[]
+
+  @@map("constituency")
 }
 
 model Panchayat {
@@ -36,6 +40,8 @@ model Panchayat {
   constituency   Constituency @relation(fields: [constituencyId], references: [id])
   booths          Booth[]
   users          User[]
+
+  @@map("panchayat")
 }
 
 model Booth {
@@ -47,6 +53,8 @@ model Booth {
   totalVoters Int       @default(0) 
   voters      Voter[]
   users       User[]
+
+  @@map("booth")
 }
 
 model User {
@@ -65,6 +73,8 @@ model User {
   boothId         Int?
   booth           Booth?         @relation(fields: [boothId], references: [id])
   marksMade      VoterMark[]   
+
+  @@map("user")
 }
 
 model Voter {
@@ -75,6 +85,7 @@ model Voter {
   marks        VoterMark[]
   
   @@unique([serialNumber, boothId])
+  @@map("voter")
 }
 
 model VoterMark {
@@ -89,4 +100,5 @@ model VoterMark {
   createdAt DateTime @default(now())
   
   @@unique([voterId, partyId]) 
+  @@map("votermark")
 }
