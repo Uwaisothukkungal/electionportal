@@ -17,7 +17,7 @@ export async function login(
     return { error: 'Username and password are required.' };
   }
 
-  const user = await prisma.user.findUnique({ where: { username }, include: { candidate: true, panchayath: true } });
+  const user = await prisma.user.findUnique({ where: { username } });
 
   if (!user) {
     return { error: 'Invalid username or password.' };
